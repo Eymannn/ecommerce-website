@@ -20,10 +20,9 @@ class RegisteredUserController extends Controller
     /**
      * Display the registration view.
      */
-    public function create(): View
+    public function create($userableType): View
     {
-
-        return view('auth.register');
+        return view('auth.register', ['userableType' => $userableType]);
     }
 
     /**
@@ -31,53 +30,34 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request , UserableType $userableType): RedirectResponse
+    public function store(Request $request, $userableType): RedirectResponse
     {
-
-
-      $user =  $request->validate([
+        $user =  $request->validate([
             'postal_code' => ['required'],
             'city' => ['required'],
-            'address'=>['required' , 'address'],
+            'address' => ['required'],
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        if($userableType == 'customer')
-        {
-            $customer =   Customer::create([
-                'postal_code' =>'test',
-                'city' =>'test',
-                'address' =>'test',
-            ]);
+        if ($userableType === UserableType::CUSTOMER) {
+            $userable =   Customer::create(
+                [
+                    'postal_code' => $request['postal_code'],
+                    'city' => $request['city'],
+                    'address' => $request['address'],   
+                ]
+            );
 
-            return $user = User::create([
+            $user = User::create([
                 'name' => $request['name'],
                 'email' => $request['email'],
                 'password' => Hash::make($request['password']),
-                'userable_id' => $customer->id,
-                'userable_type' => Customer::class,
+                'userable_id' => $userable->id,
+                'userable_type' => $userableType,
             ]);
-
         }
-
-        elseif($userableType == 'seller')
-        {
-                $seller =   Customer::create([
-            'postal_code' =>'test',
-            'city' =>'test',
-            'address' =>'test',
-        ]);
-
-        return $user = User::create([
-            'name' => $request['name'],
-            'email' => $request['email'],
-            'password' => Hash::make($request['password']),
-            'userable_id' => $seller->id,
-            'userable_type' => Seller::class,
-        ]);
-    }
 
 
 

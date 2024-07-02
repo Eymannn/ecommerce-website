@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Enums\UserableType;
+use App\Models\Customer;
+use App\Models\Seller;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +23,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Relation::morphMap([
+            UserableType::CUSTOMER => Customer::class,
+            UserableType::SELLER   => Seller::class,
+        ]);
     }
 }
