@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use App\Models\Seller;
 use App\Models\User;
+use App\Utils\Utils;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -40,6 +41,7 @@ class RegisteredUserController extends Controller
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
+        
 
         if ($userableType === UserableType::CUSTOMER) {
             $userable =   Customer::create(
@@ -59,12 +61,34 @@ class RegisteredUserController extends Controller
             ]);
         }
 
+        
+        elseif ($userableType === UserableType::SELLER) {
+            $userable =   Seller::create(
+                [
+                    'postal_code' => $request['postal_code'],
+                    'city' => $request['city'],
+                    'address' => $request['address'],   
+                ]
+            );
+
+            $user = User::create([
+                'name' => $request['name'],
+                'email' => $request['email'],
+                'password' => Hash::make($request['password']),
+                'userable_id' => $userable->id,
+                'userable_type' => $userableType,
+            ]);
+        }
+        
+
+
 
 
         event(new Registered($user));
 
         Auth::login($user);
 
+        
         return redirect(route('dashboard', absolute: false));
     }
 }
