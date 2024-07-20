@@ -31,7 +31,7 @@ class ProductController extends Controller
     public function store(StoreProductRequest $request, Product $product)
     {  
         $product = Product::create($request->all()+['user_id'=> auth()->id()]);
-        
+       
   
         if($request->hasFile('images') && $request->file('images')->isValid()){
             $product->addMediaFromRequest('images')->toMediaCollection('products');
@@ -56,22 +56,40 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        //
+        return view('edite');
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateProductRequest $request, Product $product)
+    public function update(UpdateProductRequest $request, Product $product , $id)
     {
-        //
+        $product = Product::findOrFail($id);
+
+        
+        $product->update($request->all());
+        
+
+        if($request->hasFile('images') && $request->file('images')->isValid()){
+            $product->addMediaFromRequest('images')->toMediaCollection('products');
+
+        }
+        
+        return redirect('/')->with('success', 'Product updated successfully');
     }
+
+
+    
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Product $product)
+    public function destroy($id)
     {
-        //
+        Product::destroy($id);
+        return back();
+
     }
+
+
 }

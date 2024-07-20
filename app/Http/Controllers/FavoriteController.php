@@ -46,6 +46,15 @@ class FavoriteController extends Controller
         return back();
     }
 
+    public function removeFromFavorite()
+    {
+        Product::findOrFail(intval(request('productId')));
+
+        auth()->user()->likedProducts()->detach(intval(request('productId')));
+
+        return back();
+    }
+
     /**
      * Display the specified resource.
      */

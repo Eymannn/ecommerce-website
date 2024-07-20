@@ -31,9 +31,25 @@ class Product extends Model implements HasMedia
         return $this->belongsTo(User::class);
     }
 
+
+
     public function likedUsers() : BelongsToMany
     {
         return $this->belongsToMany(User::class , 'favorites');
+    }
+
+
+
+    public function favorites() : HasMany
+    {
+        return $this->hasMany(Favorite::class);
+    }
+
+
+
+    public function addedToCard() : BelongsToMany
+    {
+        return $this->belongsToMany(User::class , 'cards');
     }
 }
 

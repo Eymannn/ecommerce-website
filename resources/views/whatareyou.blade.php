@@ -25,7 +25,7 @@
         background-position: center;
         
         "
-        
+
         >
     <a href="/register/customer"><button class="w-[200px]  py-6 bg-emerald-200 rounded-2xl "> Customer</button></a> 
         </div>

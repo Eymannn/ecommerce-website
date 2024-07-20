@@ -44,6 +44,8 @@
         <option>Tv</option>
         <option>Computers</option>
         <option>HeadPhones</option>
+        <option>Books</option>
+        <option>Photographie</option>
         </select>
       </div>
       

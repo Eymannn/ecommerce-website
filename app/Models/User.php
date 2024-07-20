@@ -53,12 +53,26 @@ class User extends Authenticatable
     {
         return  $this->morphTo();
     }
+
+
+    
     public function products(): HasMany
     {
         return $this->hasMany(Product::class);
     }
+
+
+
     public function likedProducts(): BelongsToMany
     {
         return $this->belongsToMany(Product::class, 'favorites');
+    }
+
+
+
+
+    public function productCard(): BelongsToMany
+    {
+        return $this->belongsToMany(Product::class, 'cards');
     }
 }
