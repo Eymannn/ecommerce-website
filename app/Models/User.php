@@ -63,12 +63,11 @@ class User extends Authenticatable implements HasMedia
             'password' => 'hashed',
         ];
     }
+
     public function userable(): MorphTo
     {
         return  $this->morphTo();
     }
-
-
     
     public function products(): HasMany
     {
@@ -85,9 +84,6 @@ class User extends Authenticatable implements HasMedia
     {
         return $this->belongsToMany(Product::class, 'favorites');
     }
-
-
-
 
     public function productCard(): BelongsToMany
     {
@@ -114,9 +110,20 @@ class User extends Authenticatable implements HasMedia
         return self::withCount('products')->orderBy('products_count' , 'desc')->limit($limit);
     }
 
-
     public static function clearAllAchievements()
     {
         self::whereNotNull('achievements')->update([ 'achievements' => null ]);
+    }
+
+    public function addBadges($badges)
+    {
+        $achievements = $this->achievements ?? [];
+
+        foreach ($badges as $badge)
+            if (array_search($badge['title'], array_column($achievements, 'title')) === false)
+                $achievements[] = $badge;
+
+        $this->achievements = $achievements;
+        $this->save();
     }
 }

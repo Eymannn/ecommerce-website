@@ -12,56 +12,14 @@ class ProductObserver
     {
         User::clearAllAchievements();
 
-        $usersToBeUpdated = collect();
+        $rules = Badge::rules();
 
-        foreach (Badge::rules() as $rule)
-            $rule['users']->each(function ($user) use ($rule, &$usersToBeUpdated) {
-                $doesUserQueued = $usersToBeUpdated->where('id', $user->id)->count() > 0;
+        foreach ($rules as $rule) {
+            $users = $rule['users']->get();
+            $badges = Badge::whereIn('slug', $rule['badges'])
+                ->get(['title', 'icon'])->toArray();
 
-                $currentUser = $doesUserQueued
-                    ? $usersToBeUpdated->where('id', $user->id)->first()
-                    : $user;
-
-                if ($doesUserQueued) 
-                    $usersToBeUpdated = $usersToBeUpdated->filter(function ($user) use ($currentUser) {
-                        return $user->id == $currentUser->id;
-                    });
-
-                $achievements = !is_null($currentUser->achievements) 
-                    ? $currentUser->achievements : [];
-
-                array_push($achievements, ...Badge::whereIn('slug', $rule['badges'])
-                    ->get(['title', 'icon'])->toArray());
-
-                $currentUser->achievements = array_map("unserialize", array_unique(
-                    array_map("serialize", $achievements))
-                );
-
-                $usersToBeUpdated->push($currentUser);
-            });
-
-        $usersToBeUpdated->each(fn($user) => $user->save());
+            foreach ($users as $user) $user->addBadges($badges);
+        }
     }
 }
-
-
-// User::getTopByProductCount(10)->each(function (User $user) {
-//     $user->achievements = Badge::whereIn('slug', Badge::$rules['PRODUCT_TOP_10'])
-//         ->get(['title', 'icon'])->toArray();
-    
-//     $user->save();
-// });
-
-// User::getTopByProductCount(3)->each(function (User $user) {
-//     $user->achievements = Badge::whereIn('slug', Badge::$rules['PRODUCT_TOP_3'])
-//         ->get(['title', 'icon'])->toArray();
-    
-//     $user->save();
-// });
-
-// User::getTopByProductCount(1)->each(function (User $user) {
-//     $user->achievements = Badge::whereIn('slug', Badge::$rules['PRODUCT_TOP_1'])
-//         ->get(['title', 'icon'])->toArray();
-
-//     $user->save();
-// });
