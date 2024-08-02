@@ -37,6 +37,7 @@ class ProductController extends Controller
             $product->addMediaFromRequest('images')->toMediaCollection('products');
 
         }
+        
         return redirect('/dashboard/seller');
         
         
@@ -79,6 +80,14 @@ class ProductController extends Controller
     }
 
 
+
+    public function statusToPublish($id)
+    {
+        $product = Product::findOrFail($id);
+        $product->update([$product->status = 'published']);
+        return back();
+    }
+
     
 
     /**
@@ -90,6 +99,35 @@ class ProductController extends Controller
         return back();
 
     }
+    
+    public function restore($id)
+    {
+        // Find the soft-deleted product by its ID
+        $product = Product::onlyTrashed()->findOrFail($id);
+
+        // Restore the product
+        $product->restore();
+
+        // Update the product's status to "pending"
+        $product->status = 'pending';
+
+        // Save the updated product
+        $product->save();
+
+        // Redirect back with a success message (or return a JSON response)
+        return back()->with('success', 'Product restored and status updated to pending successfully');
+    }
+
+
+    public function softDelete($id)
+    {
+        $product = Product::findOrFail($id);
+        $product->update([$product->status = 'archived']);
+        $product->delete();
+        
+        return back();
+    }
+   
 
 
 }

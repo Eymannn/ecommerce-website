@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Image\Enums\Fit;
@@ -18,13 +19,15 @@ class Product extends Model implements HasMedia
 {
     use HasFactory;
     use InteractsWithMedia;
+    use SoftDeletes;
     protected $fillable=[
         'name',
         'user_id',
         'small_desc',
         'big_desc',
         'price',
-        'category'
+        'category',
+        'status',
     ];
     public function user() : BelongsTo
     {
@@ -50,6 +53,10 @@ class Product extends Model implements HasMedia
     public function addedToCard() : BelongsToMany
     {
         return $this->belongsToMany(User::class , 'cards');
+    }
+    public function reviews() : HasMany
+    {
+        return $this->hasMany(Reviews::class);
     }
 }
 

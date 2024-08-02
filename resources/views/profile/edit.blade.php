@@ -24,6 +24,21 @@
                     @include('profile.partials.delete-user-form')
                 </div>
             </div>
+            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+                <div class="max-w-xl">
+                    <h1 class="text-xl tracking-wider">
+                        Add image
+                    </h1>
+                    
+                    <form class="space-y-6" action="{{ route('add.image') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        
+                        
+                        <x-primary-button>{{ __('add image') }}</x-primary-button>
+                        
+                    </form>
+                </div>    
+            </div>
         </div>
     </div>
 </x-app-layout>

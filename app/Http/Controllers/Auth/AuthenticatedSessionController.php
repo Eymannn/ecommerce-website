@@ -29,13 +29,17 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        if(Utils::isSeeler()){
-            return redirect(route('sellerDashboard'));
-        }
+        
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        return redirect('/dashboard/d');
     }
-
+    protected function authenticated(Request $request, $user)
+    {
+        if ($user->status === 'banned') {
+            Auth::logout();
+            return redirect('/login')->withErrors(['Your account has been banned.']);
+        }
+    }
     /**
      * Destroy an authenticated session.
      */

@@ -1,4 +1,11 @@
 <x-layout>
+    <style>
+        
+        #loading {
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
     <section class="bg-white py-8">
 
         <div class="container mx-auto flex items-center flex-wrap pt-4 pb-12">
@@ -31,8 +38,9 @@
                     </div>
                 </div>
             </nav>
+            
             @foreach ($products as $product)
-                <div
+                <div 
                     class="w-full md:w-1/3 xl:w-1/4 p-6 flex flex-col hover:scale-105 transition-transform duration-500">
                     <a href="{{ route('product-page', ['id' => $product->id]) }}">
                         <img class="hover:grow hover:shadow-lg h-60"
@@ -74,6 +82,7 @@
                                     </svg>
 
                                 </button>
+                             
                                 
                                 
 
@@ -117,7 +126,7 @@
                             </form>
 
                             @endif
-                          
+                           
                         </div>
                         <div>
                             <p class="text-gray-400 text-xs ">{{ Str::words($product->small_desc , 15) }}</p>
@@ -126,6 +135,25 @@
                     </a>
                 </div>
             @endforeach
-
+                
+            <div id="pagination">
+                {{ $products->links() }}
+            </div>
     </section>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            let content = document.getElementById('content');
+            let pagination = document.getElementById('pagination');
+            let nextLink = pagination.querySelector('.pagination .next a');
+
+            window.addEventListener('scroll', () => {
+                if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+                    if (nextLink) {
+                        window.location.href = nextLink.href;
+                    }
+                }
+            });
+        });
+    </script>
+    
 </x-layout>
